@@ -1,0 +1,33 @@
+framework:
+    messenger:
+        # The bus that is going to be injected when injecting MessageBusInterface
+        default_bus: command.bus
+        buses:
+            command.bus:
+                middleware:
+                    - validation
+                    - doctrine_transaction
+            query.bus:
+                middleware:
+                    - validation
+            event.bus:
+                # the 'allow_no_handlers' middleware allows to have no handler
+                # configured for this bus without throwing an exception
+                default_middleware: allow_no_handlers
+                middleware:
+                    - validation
+
+        transports:
+            sync: 'sync://'
+            async: "%env(MESSENGER_TRANSPORT_DSN)%"
+
+        routing:
+            App\Message\OrderCreate: 'async'
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'
